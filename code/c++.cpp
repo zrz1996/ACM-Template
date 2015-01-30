@@ -24,3 +24,16 @@ set nowrap
 
 #include <iomanip>
 cout <<setprecision()
+
+char buf[];
+string x = buf;
+bool strcmp(buf,"")
+
+auto it = setty.begin();
+auto it : setty
+
+typedef pair< , > PII;
+PII.first   PII.second
+
+vector<> v;
+sort(v.begin(), v.end(), cmp);
