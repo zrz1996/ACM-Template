@@ -56,6 +56,7 @@ Template codes for ACM regional contest
 * string-library.cpp	
 * suffix-array.cpp	
 * tarjan.cpp	
+* topsort.cpp
 * treap.cpp	
 * xor高斯消元.cpp		
 * 插头dp_最小表示.cpp	
