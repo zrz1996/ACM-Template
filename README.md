@@ -25,7 +25,8 @@ Template codes for ACM regional contest
 * fast-fourier-transform.cpp		
 * gauss-elimination.cpp			
 * heap.cpp	
-* high-precision-calculation.cpp		
+* high-precision-calculation.cpp   	
+* highest-label-preflow-push.cpp		
 * hopcroft-karp.cpp			
 * html_tag格式化.cpp			
 * java.java				
