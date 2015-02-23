@@ -1,5 +1,49 @@
 ﻿// implementation of (dblcmp,dist,cross,dot) is trivial
-
+const double eps = 1e-8;
+int dblcmp(double x)
+{
+	if (fabs(x) < eps)
+		return 0;
+	return x > 0 ? 1 : -1;
+}
+struct point_t
+{
+	double x, y;
+	point_t(): x(0), y(0) {}
+	point_t(double x, double y): x(x), y(y) {}
+	bool operator <(const point_t &b) const
+	{
+		return dblcmp(x - b.x) < 0 || (dblcmp(x - b.x) == 0 && dblcmp(y - b.y) < 0);
+	}
+	bool operator ==(const point_t &b) const
+	{
+		return dblcmp(x - b.x) == 0 && dblcmp(y - b.y) == 0;
+	}
+	point_t operator +(const point_t &b)
+	{
+		return point_t(x + b.x, y + b.y); 
+	}
+	point_t operator -(const point_t &b)
+	{
+		return point_t(x - b.x, y - b.y);
+	}
+	point_t operator /(double k)
+	{
+		return point_t(x / k, y / k);
+	}
+	double operator *(const point_t b)
+	{
+		return x * b.x + y * b.y;
+	}
+};
+double dist(point_t p1, point_t p2)
+{
+	return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+}
+double cross(point_t p1, point_t p2)
+{
+	return p1.x * p2.y - p1.y * p2.x;
+}
 // count-clock wise is positive direction
 double angle(point_t p1, point_t p2) {
 	double x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
