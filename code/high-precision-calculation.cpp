@@ -59,6 +59,7 @@ struct bnum_t {
 			}
 		}
 		while (f.b[f.l + 1]) f.l += 1;
+		while (f.b[f.l] == 0 && f.l > 1) f.l--;
 		f.b.resize(f.l + 1);
 		return f;
 	}
