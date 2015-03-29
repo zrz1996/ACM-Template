@@ -1,4 +1,22 @@
-const int MAX_SIDE = 500, MAX_NODE = 500;
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <map>
+#include <vector>
+#include <string>
+#include <queue>
+using namespace std;
+typedef long long LL;
+#define For(i,a,b) for (int i = (a); i <= (b); i++)
+#define Cor(i,a,b) for (int i = (a); i >= (b); i--)
+#define Fill(a,b) memset(a,b,sizeof(a))
+
+const int MAX_SIDE = 100000, MAX_NODE = 100000;
 
 class network_flow
 {
