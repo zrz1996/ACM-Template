@@ -4,6 +4,7 @@ Template codes for ACM regional contest
 ## Including:
 
 * BabyStepGaintStep_nomap.cpp		
+* FWT.cpp	
 * G.cpp					
 * Main.java				
 * Main1.java				
