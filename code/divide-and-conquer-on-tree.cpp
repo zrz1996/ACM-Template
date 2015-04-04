@@ -98,3 +98,24 @@ void dfs2(int x, int sp)
 			dfs2(v, v);
 	}
 }
+int find(int u, int v)
+{
+	int f1 = top[u], f2 = top[v];
+	int ret = 0;
+	while (f1 != f2)
+	{
+		if (dep[f1] < dep[f2])
+		{
+			swap(f1, f2);
+			swap(u, v);
+		}
+		ret = max(ret, seg.query(p[f1], p[u], 1, n, 1));
+		u = fa[f1]; f1 = top[u];
+	}
+	if (u == v)
+		return ret;
+	if (dep[u] > dep[v])
+		swap(u, v);
+	ret = max(ret, seg.query(p[son[u]], p[v], 1, n, 1));
+	return ret;
+}
