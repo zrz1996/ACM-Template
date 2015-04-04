@@ -58,3 +58,43 @@ int work(int u) {
 	cut[u] = false;
 	return result;
 }
+
+int fa[maxn], dep[maxn], son[maxn], size[maxn];
+void dfs1(int x, int p, int depth)
+{
+	fa[x] = p; dep[x] = depth;
+	size[x] = 1;
+	int maxsize = 0;
+	son[x] = 0;
+	for (int i = head[x]; i; i = E[i].nxt)
+	{
+		int v = E[i].v;
+		if (v != p)
+		{
+			dfs1(v, x, depth + 1);
+			size[x] += size[v];
+			if (size[v] > maxsize)
+			{
+				maxsize = size[v];
+				son[x] = v;
+			}
+		}
+	}
+}
+int top[maxn], p[maxn], fp[maxn], lable;
+void dfs2(int x, int sp)
+{
+	top[x] = sp;
+	p[x] = ++lable;
+	fp[p[x]] = x;
+	if (son[x])
+		dfs2(son[x], sp);
+	else
+		return;
+	for (int i = head[x]; i; i = E[i].nxt)
+	{
+		int v = E[i].v;
+		if (v != son[x] && v != fa[x])
+			dfs2(v, v);
+	}
+}
