@@ -148,6 +148,170 @@ void factorize(LL n, vector<LL> &divisor) {
 		factorize(d, divisor);
 	}
 }
+//faster factor
+int p[1000010], prime[100010], psize = 1000000;
+LL a[1000100];
+void sieve(){
+	int i,j,tot,t1;
+	for (i=1;i<=psize;i++) p[i]=i;
+	for (i=2,tot=0;i<=psize;i++){
+		if (p[i]==i) prime[++tot]=i;
+		for (j=1;j<=tot && (t1=prime[j]*i)<=psize;j++){
+			p[t1]=prime[j];
+			if (i%prime[j]==0) break;
+		}
+	}
+}
+inline LL mul(LL a, LL b, LL p) 
+{
+	if (p <= 1000000000) 
+		return a * b % p;
+	else 
+		if (p<=1000000000000LL) 
+			return (((a * (b >> 20) % p) << 20) + (a * (b & ((1 << 20) - 1)))) % p;
+		else 
+		{
+			LL d = (LL)floor(a * (long double)b / p + 0.5);
+			LL ret = (a * b - d * p) % p;
+			if (ret < 0) ret += p;
+			return ret;
+		}
+}
+LL fpow(LL a,LL n,LL p) 
+{
+	LL ans=1;
+	for (; n; n >>= 1) 
+	{
+		if (n & 1) ans = mul(ans, a, p);
+		a = mul(a, a, p);
+	}
+	return ans;
+}
+bool witness(LL a, LL n) 
+{
+	int t = 0;
+	LL u = n - 1;
+	for (; ~u & 1; u >>= 1) t++;
+	LL x = fpow(a, u, n), _x = 0;
+	for (; t; t--) 
+	{
+		_x = mul(x, x, n);
+		if (_x == 1 && x != 1 && x != n-1) return 1;
+		x = _x;
+	}
+	return _x != 1;
+}
+bool miller(LL n) 
+{
+	if (n < 2) return 0;
+	if (n < psize) return p[n] == n;
+	if (~n & 1) return 0;
+	for (int j = 0; j <= 7; j++) 
+		if (witness(rand() % (n - 1) + 1, n)) 
+			return 0;
+	return 1;
+}
+LL gcd(LL a,LL b) 
+{
+	LL ret = 1;
+	while (a != 0) 
+	{
+		if ((~a & 1) && (~b & 1)) 
+			ret <<= 1,a >>= 1,b >>= 1;
+		else 
+			if (~a & 1) 
+				a >>= 1; 
+			else 
+				if (~b & 1) 
+					b >>= 1;
+				else 
+				{
+					if (a < b) 
+						swap(a, b);
+					a -= b;
+				}
+	}
+	return ret * b;
+}
+LL rho(LL n) 
+{
+	for (;;) 
+	{
+		LL X = rand() % n, Y, Z, T = 1, *lY = a, *lX = lY;
+		int tmp = 20;
+		LL C = rand() % 10 + 3;
+		X = mul(X, X, n) + C;
+		*(lY++) = X; lX++;
+		Y = mul(X, X, n) + C;
+		*(lY++) = Y;
+		for(; X != Y;) 
+		{
+			LL t = X - Y + n;
+			Z = mul(T, t, n);
+			if(Z == 0) 
+				return gcd(T, n);
+			tmp--;
+			if (tmp == 0) 
+			{
+				tmp = 20;
+				Z = gcd(Z, n);
+				if (Z != 1 && Z != n) 
+					return Z;
+			}
+			T = Z;
+			Y = *(lY++) = mul(Y, Y, n) + C;
+			Y = *(lY++) = mul(Y, Y, n) + C;
+			X = *(lX++);
+		}
+	}
+}
+void find(LL n, int c)
+{
+	for (int i = 0; i < ct; i++)
+		if (n % fac[i] == 0)
+			n /= fac[i], fac[ct++] = fac[i];
+    if(n == 1) return;
+	if (n <= psize)
+	{
+		for (; n != 1; n /= p[n])
+			fac[ct++] = p[n];
+		return;
+	}
+    if(miller(n))
+    {
+        fac[ct++] = n;
+        return ;
+    }
+    LL p = n;
+    LL k = c;
+    while(p >= n) p = rho(p);
+    find(p, k);
+    find(n / p, k);
+}
+void factorize(LL n, vector<pair<LL, LL> > &result)
+{
+	result.clear();
+	if (n == 1)
+		return;
+	ct = 0;
+	find(n, 120);
+	sort(fac, fac + ct);
+	num[0] = 1;
+	int k = 1;
+	for(int i=1; i<ct; i++)
+	{
+		if(fac[i] == fac[i-1])
+			++num[k-1];
+		else
+		{
+			num[k] = 1;
+			fac[k++] = fac[i];
+		}
+	}
+	cnt = k;
+	for (int i = 0; i < cnt; i++)
+		result.push_back(make_pair(fac[i], num[i]));
+}
 
 // discrete-logarithm, finding y for equation k = x^y % mod
 int discrete_logarithm(int x, int mod, int k) {
@@ -178,7 +342,28 @@ int discrete_logarithm(int x, int mod, int k) {
 	}
 	return -1;
 }
-
+//faster discrete log
+void discrete_log_init(LL g, LL p)
+{
+	hash_init();
+	int i;
+	LL tmp;
+	for(i = 0, tmp = 1; i < 1e6; i++, tmp = tmp * g % p)
+		insert(tmp % p, i * 1LL);
+}
+LL discrete_log(LL g, LL p, LL b)
+{
+	LL res, am = fpow(g, 1e6, p), inv = fpow(b, p - 2, p), x = 1;
+	for(LL i = 1e6; ; i += 1e6)
+	{
+		if((res = find((x = x * am % p) * inv % p)) != -1)
+		{
+			return i - res;
+		}   
+		if(i > p)break;
+	}   
+	return -1;
+}
 // primtive root, finding the number with order p-1 
 int primtive_root(int p) {
 	vector<int> factor;
