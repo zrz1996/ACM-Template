@@ -12,8 +12,8 @@ int fpm(int a, int b)
 	}
 	return ret;
 }
-void FFT_Init() {
-	for ( K = 1; K < n << 1; K <<= 1 ); inv_K = fpm(K, P - 2);
+void FFT_Init(int K) 
+{
 	w[ 0 ][ 0 ] = w[ 0 ][ K ] = w[ 1 ][ 0 ] = w[ 1 ][ K ] = 1;
 	int G = fpm( g, ( P - 1 ) / K );
 	FOR( i, 1, K - 1 ) {
@@ -22,8 +22,8 @@ void FFT_Init() {
 	FOR( i, 0, K ) {
 		w[ 1 ][ i ] = w[ 0 ][ K - i ];
 	}
+	inv_K = fpm(K, P - 2);
 }
-
 void FFT( int X[], int k, int v ) {
 	int i, j, l;
 	for ( i = j = 0; i < k; i++ ) {
@@ -33,7 +33,7 @@ void FFT( int X[], int k, int v ) {
 	for ( i = 2; i <= k; i <<= 1 )
 		for ( j = 0; j < k; j += i )
 			for ( l = 0; l < i >> 1; l++ ) {
-				int t = (ll)X[ j + l + ( i >> 1 ) ] * w[ v ][ ( K / i ) * l ] % P;
+				int t = (ll)X[ j + l + ( i >> 1 ) ] * w[ v ][ ( k / i ) * l ] % P;
 				X[ j + l + ( i >> 1 ) ] = ( (ll)X[ j + l ] - t + P ) % P;
 				X[ j + l ] = ( (ll)X[ j + l ] + t ) % P;
 			}
@@ -42,24 +42,59 @@ void FFT( int X[], int k, int v ) {
 			X[i] = (ll)X[i] * inv_K % P;
 }
 int tmp[100000];
+int invB[10000];
 void GetInv( int A[], int A0[], int t ) {
 	if ( t == 1 ) { A0[ 0 ] = fpm( A[ 0 ], P - 2); return; }
 	GetInv( A, A0, ( t + 1 ) >> 1 );
-	K = 1; for ( ; K <= ( t << 1 ) + 3; K <<= 1 ); inv_K = fpm( K, P - 2);
-	w[ 0 ][ 0 ] = w[ 0 ][ K ] = w[ 1 ][ 0 ] = w[ 1 ][ K ] = 1;
-	int G = fpm( g, ( P - 1 ) / K );
-	FOR( i, 1, K - 1 ) {
-		w[ 0 ][ i ] = (ll)w[ 0 ][ i - 1 ] * G % P;
-	}
-	FOR( i, 0, K ) {
-		w[ 1 ][ i ] = w[ 0 ][ K - i ];
-	}
+	K = 1; 
+	for ( ; K <= ( t << 1 ) + 3; K <<= 1 ); 
+	FFT_Init(K);
 	FOR ( i, 0, t - 1 ) { tmp[ i ] = A[ i ]; } FOR ( i, t, K - 1 ) { tmp[ i ] = 0; }
 	FFT( tmp, K, 0 ); FFT( A0, K, 0 );
 	FOR ( i, 0, K - 1 ) { tmp[ i ] = 2 - (ll)tmp[ i ] * A0[ i ] % P + P; tmp[i] %= P; }
 	FOR ( i, 0, K - 1 ) { A0[ i ] = (ll)A0[ i ] * tmp[ i ] % P; }
 	FFT( A0, K, 1 );
 	FOR ( i, t, K - 1 ) { A0[ i ] = 0; }
+}
+void Division(int A[], int B[], int D[], int R[], int n, int m)
+{
+	int K;
+	for (K = 1; K < 2 * n; K <<= 1);
+	For(i, 0, n - m)
+		D[i] = A[n - i];
+	For(i, n - m + 1, K - 1)
+		D[i] = 0;
+	For(i, 0, m / 2)
+		swap(B[i], B[m - i]);
+	GetInv(B, invB, n - m + 1);
+	For(i, 0, m / 2)
+		swap(B[i], B[m - i]);
+	FFT_Init(K);
+	FFT(D, K, 0);
+	FFT(invB, K, 0);
+	For(i, 0, K - 1)
+		D[i] = (LL)D[i] * invB[i] % P;
+	FFT(D, K, 1);
+	For(i, n - m + 1, K - 1)
+		D[i] = 0;
+	For(i, 0, (n - m) / 2)
+		swap(D[i], D[n - m - i]);
+	For(i, 0, n - m)
+		tmp[i] = D[i];
+	For(i, n - m + 1, K - 1)
+		tmp[i] = 0;
+	FFT(tmp, K, 0);
+	FFT(B, K, 0);
+	For(i, 0, K - 1)
+		tmp[i] = (LL)tmp[i] * B[i] % P;
+	FFT(tmp, K, 1);
+	For(i, m, K - 1)
+		tmp[i] = 0;
+	For(i, 0, m - 1)
+		R[i] = (A[i] - tmp[i] + P) % P;
+   	For(i, m, K - 1)
+		R[i] = 0;
+	FFT(B, K, 1);	
 }
 int fac[100010], inv_fac[100010], B[100010];
 void GetBernoulli(int n)
