@@ -1,0 +1,82 @@
+set nu
+syntax on
+set tabstop=4
+set shiftwidth=4
+set cin
+set smartindent
+set st=4
+set smarttab
+set nowrap
+map <F4> :w<cr>:!subl -a %<cr>
+map <F10> :!time ./%<<cr>
+let s:extfname= expand("%:e")
+
+if s:extfname==? "cpp"
+	map <F9> :w<cr>:!g++ -std=c++0x % -o %< -g -O2 -Wall<cr>
+	map <F8> :w<cr>:!g++ -std=c++0x % -o %< -g -Wall<cr>
+	map <F7> :w<cr>:!gdb %<<cr>
+	map <F5> :call AddTitle()<cr>
+	function AddTitle()
+    	call append(0,"#include <cstdio>")
+    	call append(1,"#include <cstring>")
+   		call append(2,"#include <cstdlib>")
+		call append(3,"#include <cmath>")
+		call append(4,"#include <ctime>")
+    	call append(5,"#include <iostream>")
+    	call append(6,"#include <algorithm>")
+    	call append(7,"#include <set>")
+		call append(8,"#include <map>")
+		call append(9,"#include <vector>")
+		call append(10,"#include <string>")
+		call append(11,"#include <queue>")
+		call append(12,"#include <stack>")
+		call append(13,"#include <cassert>")
+		call append(14,"#include <ctime>")
+    	call append(15,"using namespace std;")
+		call append(16,"typedef long long LL;")
+		call append(17,"#define For(i,a,b) for (int i = (a); i <= (b); i++)")
+		call append(18,"#define Cor(i,a,b) for (int i = (a); i >= (b); i--)")
+		call append(19,"#define rep(i,a) for (int i = 0; i < a; i++)")
+		call append(20,"#define Fill(a,b) memset(a,b,sizeof(a))")
+	endf
+endif
+
+if s:extfname==? "c"
+	map <F9> :w<cr>:!gcc % -o %< -g -O2 -Wall<cr>
+	map <F8> :w<cr>:!gcc % -o %< -g -Wall<cr>
+	map <F7> :w<cr>:!gdb %<<cr>
+	map <F5> :call AddTitle()<cr>
+	function AddTitle()
+    	call append(0,"#include <stdio.h>")
+    	call append(1,"#include <string.h>")
+   		call append(2,"#include <stdlib.h>")
+		call append(3,"#include <math.h>")
+		call append(4,"#include <time.h>")
+		call append(5,"typedef long long LL;")
+		call append(6,"#define For(i,a,b) for (i = (a); i <= (b); i++)")
+		call append(7,"#define Cor(i,a,b) for (i = (a); i >= (b); i--)")
+		call append(8,"#define rep(i,a) for (i = 0; i < a; i++)")
+	endf
+endif
+
+if s:extfname==? "f90"
+    let fortran_free_source=1
+    unlet! fortran_fixed_source
+	let fortran_more_precise=1
+	let fortran_do_enddo=1
+	let fortran_have_tabs=1
+	map <F9> :w<cr>:!gfortran % -o %< -g<cr>
+endif
+
+if s:extfname==? "py"
+	map <F9> :w<cr>:!python -d %<cr>
+	map <F7> :w<cr>:!python -m pdb %<cr>
+endif
+if s:extfname==? "ss"
+	map <F9> :w<cr>:!petite  %<cr>
+endif
+
+if s:extfname==? "java"
+	map <F9> :w<cr>:!javac -g %<cr>
+	map <F10> :!java Main<cr>
+endif
